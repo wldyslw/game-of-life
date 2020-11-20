@@ -19,9 +19,12 @@ module.exports = {
     plugins: [
         new HtmlPlugin({
             title: 'WASM Demo',
+            template: 'js/index.html',
         }),
         new WasmPackPlugin({
             crateDirectory: path.resolve(__dirname, '.'),
+            outName: 'game_of_life',
+            forceMode: 'production',
         }),
         new webpack.ProvidePlugin({
             TextDecoder: ['text-encoding', 'TextDecoder'],

@@ -1,8 +1,8 @@
-# Under construction
+# Game_of_Life.wasm
 
-This will eventually become a Game of Life written in Rust + JS and utilizing WebAssembly (it already does).
+Game of Life written in Rust + JS and utilizing WebAssembly.
 
-## How to run (for now)
+## How to run
 
 First, install [Rust toolchain](https://www.rust-lang.org/tools/install):
 
@@ -24,3 +24,7 @@ npm start # check localhost:1234
 ```
 
 Enjoy!
+
+# Credits
+
+Based on [this guide](https://rustwasm.github.io/docs/book/introduction.html).
