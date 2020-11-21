@@ -13,6 +13,12 @@ import { Universe } from 'pkg/game_of_life.d.ts';
         private universe: Universe;
         private canvasCtx: CanvasRenderingContext2D;
         private fps: FPSCounter;
+        private _paused: boolean;
+        private RAFId: number;
+
+        get paused(): boolean {
+            return this._paused;
+        }
 
         constructor(canvasId: string, height = 64, width = 64, fpsContainerId: string = 'fps') {
             this.universe = new Universe(height, width);
@@ -23,6 +29,8 @@ import { Universe } from 'pkg/game_of_life.d.ts';
             this.canvasCtx = canvas.getContext('2d');
 
             this.fps = new FPSCounter(fpsContainerId);
+
+            this.renderLoop = this.renderLoop.bind(this);
         }
 
         private getIndex(row: number, column: number): number {
@@ -77,21 +85,56 @@ import { Universe } from 'pkg/game_of_life.d.ts';
             ctx.stroke();
         }
 
-        private renderLoop() {
-            this.fps.start();
+        tick() {
             this.drawCells(this.universe.tick());
-            this.fps.end();
+        }
 
-            requestAnimationFrame(this.renderLoop.bind(this));
+        private renderLoop() {
+            this.fps.startMeasure();
+            this.tick();
+            this.fps.endMeasure();
+
+            this.RAFId = requestAnimationFrame(this.renderLoop);
         }
 
         render() {
             this.drawGrid();
             this.drawCells();
-            requestAnimationFrame(this.renderLoop.bind(this));
+
+            this.RAFId = requestAnimationFrame(this.renderLoop);
+        }
+
+        pause() {
+            this._paused = true;
+            this.fps.resetMeasures();
+            cancelAnimationFrame(this.RAFId);
+        }
+
+        resume() {
+            this._paused = false;
+            requestAnimationFrame(this.renderLoop);
         }
     }
 
-    const renderer = new UniverseRenderer('canvas', 180, 320);
+    const renderer = new UniverseRenderer('canvas', 150, 150);
     renderer.render();
+
+    const pauseButton = document.getElementById('pause') as HTMLButtonElement;
+    const tickButton = document.getElementById('tick') as HTMLButtonElement;
+
+    pauseButton.addEventListener('click', () => {
+        if (renderer.paused) {
+            pauseButton.innerText = 'Pause';
+            renderer.resume();
+            tickButton.disabled = true;
+        } else {
+            pauseButton.innerText = 'Resume';
+            renderer.pause();
+            tickButton.disabled = false;
+        }
+    });
+
+    tickButton.addEventListener('click', () => {
+        renderer.tick();
+    });
 })();

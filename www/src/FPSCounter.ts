@@ -12,11 +12,13 @@ class FPSCounter {
         this.options = options;
     }
 
-    start() {
+    startMeasure() {
         this.now = performance.now();
     }
 
-    end() {
+    endMeasure() {
+        const delta = performance.now() - this.now;
+        delta;
         this.currentFPS = (1 / (performance.now() - this.now)) * 1000;
         this.now = performance.now();
 
@@ -28,6 +30,12 @@ class FPSCounter {
         if (!!this.container) {
             this.render();
         }
+    }
+
+    resetMeasures() {
+        this.latestValues = [];
+        this.currentFPS = 0;
+        this.averageFPS = 0;
     }
 
     private render() {
